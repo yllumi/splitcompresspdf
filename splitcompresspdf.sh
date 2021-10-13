@@ -4,8 +4,11 @@ name="Ipin"
 echo "Get ready, $name!"
 echo 
 
-# Get filename
+# Get folder name
 folder=$1
+
+# Compress pdf
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile="$folder/source.min.pdf" "$folder/source.pdf"
 
 # Read file split specs
 while read line; do
@@ -14,7 +17,8 @@ while read line; do
         first=${COL[0]}
         last=${COL[1]}
         output=${COL[2]}
-        pdftk "$folder/source.pdf" cat $first-$last output "$folder/uncompress_$output"
-        gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile="$folder/$output" $folder/uncompress_$output
+        
+        # Split pdf based on spec
+        pdftk "$folder/source.min.pdf" cat $first-$last output "$folder/$output"
     done <<< "$line"
 done < "$folder/index.txt"
